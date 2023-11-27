@@ -2,7 +2,7 @@ import pickle
 
 class FromText:
     def __init__(self) -> None:
-        with open('from_text/emoji_from_text_detection_model.pkl', 'rb') as model_file:
+        with open('from_text/text_emotion_detection_model.pkl', 'rb') as model_file:
             self.model = pickle.load(model_file)
     
     def predict(self, text: str) -> str:
