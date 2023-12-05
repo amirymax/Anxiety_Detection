@@ -1,52 +1,50 @@
-import numpy as np
-from tensorflow.keras.models import load_model
-from sklearn.preprocessing import StandardScaler
 import sounddevice as sd
+import numpy as np
 import librosa
 import joblib
-import random
-import pickle 
 
-# Function to extract features from audio data
-def extract_features(audio_data, sample_rate):
-    mfccs = librosa.feature.mfcc(y=audio_data.astype(float), sr=sample_rate, n_mfcc=13)
-    return np.mean(mfccs.T, axis=0)
-
-# Load the saved model and scaler
-model_filename = 'audioai/audio_emotion_detection_model.pkl'
-with open(model_filename, 'rb') as model_file:
-    model = pickle.load(model_file)
-scaler_filename = 'audioai/emotion_classifier_scaler.pkl'
-scaler = joblib.load(scaler_filename)
-
-# Reverse mapping for emotion labels
-emotion_labels_reverse = {0: 'ANG', 1: 'DIS', 2: 'FEA', 3: 'HAP', 4: 'NEU', 5: 'SAD'}
-
-# Function to classify emotion from audio data
-def classify_emotion(audio_data, sample_rate):
-    features = extract_features(audio_data, sample_rate)
-    features_scaled = scaler.transform([features])
-    prediction = model.predict(features_scaled)[0]
-    predicted_class = np.argmax(prediction)
-    return predicted_class
-
-# Record audio for a specific duration
-def record_audio(duration, sample_rate):
-    recording = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1, dtype='float32')
+# Function to extract features from real-time audio input
+def extract_realtime_features(duration=5, sr=44100):
+    print("Listening... (Press Ctrl+C to stop)")
+    audio_data = sd.rec(int(duration * sr), samplerate=sr, channels=1, dtype=np.float32)
     sd.wait()
-    return np.squeeze(recording)
 
-# Set up the microphone input
-sample_rate = 16000
-channels = 1
-duration = 5  # Set the duration for recording (in seconds)
+    # Normalize the audio data to the range [-1, 1]
+    audio_data /= np.max(np.abs(audio_data), axis=0)
 
-# Record audio
-print(f'Recording for {duration} seconds...')
-audio_data = record_audio(duration, sample_rate)
+    features = librosa.feature.mfcc(y=audio_data.flatten(), sr=sr, n_mfcc=13)
+    return np.mean(features, axis=1)
 
-# Classify emotion
-prediction = classify_emotion(audio_data, sample_rate)
-predicted_emotion = emotion_labels_reverse[prediction]
+# Load the pre-trained model
+model_filename = "ravdess_emotion_classifier.pkl"
+loaded_model = joblib.load(model_filename)
 
-print(f'Predicted Emotion: {predicted_emotion}')
+# Function to predict emotion from real-time features
+def predict_emotion_from_microphone():
+    try:
+        # Capture real-time features
+        realtime_features = extract_realtime_features()
+
+        # Reshape the features to match the input shape expected by the model
+        realtime_features = realtime_features.reshape(1, -1)
+
+        # Make predictions using the pre-trained model
+        emotion_prediction = loaded_model.predict(realtime_features)
+# Emotion (01 = neutral, 02 = calm, 03 = happy, 04 = sad, 05 = angry, 06 = fearful, 07 = disgust, 08 = surprised).
+        emotions = {
+            '01':'neutral',
+            '02':'calm',
+            '03':'happy',
+            '04':'sad',
+            '05':'angry',
+            '06':'fearful',
+            '07':'disgust',
+            '08':'surprised'
+        }
+        print("Predicted Emotion:", emotions[emotion_prediction[0]])
+
+    except KeyboardInterrupt:
+        print("\nRecording stopped.")
+
+if __name__ == "__main__":
+    predict_emotion_from_microphone()
