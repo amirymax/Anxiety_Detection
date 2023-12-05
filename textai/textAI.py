@@ -1,8 +1,8 @@
 import pickle
 
-class FromText:
+class TextAI:
     def __init__(self) -> None:
-        with open('from_text/text_emotion_detection_model.pkl', 'rb') as model_file:
+        with open('textai/text_emotion_detection_model.pkl', 'rb') as model_file:
             self.model = pickle.load(model_file)
     
     def predict(self, text: str) -> str:
@@ -12,6 +12,6 @@ class FromText:
         n = self.model.predict([text])[0]
         return state[n]
 
-model = FromText()
+model = TextAI()
 
-print(model.predict(input()))
+print(model.predict(input('Input the text to detect emotion:\n')))
