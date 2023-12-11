@@ -47,6 +47,7 @@ async def process_callback(callback_query: types.CallbackQuery):
 # Handler for text messages
 @dp.message_handler(content_types=types.ContentType.TEXT)
 async def handle_text(message: types.Message):
+    await bot.send_message(message.chat.id, 'Analyzing your text. Please wait...')
     text = message.text
     text_model = TextAI()
     emotional_state = text_model.predict(text)
@@ -55,6 +56,7 @@ async def handle_text(message: types.Message):
 # Handler for audio messages
 @dp.message_handler(content_types=types.ContentType.VOICE)
 async def handle_audio(message: types.Message):
+    await bot.send_message(message.chat.id, 'Analyzing your voice. Please wait...')
     # Get the voice file ID
     voice_file_id = message.voice.file_id
 
@@ -126,6 +128,7 @@ async def handle_video(message: types.Message):
 # Handler for photo messages
 @dp.message_handler(content_types=types.ContentType.PHOTO)
 async def handle_photo(message: types.Message):
+    await bot.send_message(message.chat.id, 'Analyzing your photo. Please wait...')
     # Get the photo file ID
     photo_file_id = message.photo[-1].file_id
 
