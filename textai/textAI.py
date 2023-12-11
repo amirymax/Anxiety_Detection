@@ -11,7 +11,3 @@ class TextAI:
                  4:'Positive'}
         n = self.model.predict([text])[0]
         return state[n]
-
-model = TextAI()
-
-print(model.predict(input('Input the text to detect emotion:\n')))
