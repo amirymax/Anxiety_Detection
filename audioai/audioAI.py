@@ -4,7 +4,7 @@ import tensorflow as tf
 
 class AudioAI:
     def __init__(self) -> None:
-        self.emotion_labels =  ["Angry", "Disgust", "Fear", "Happy", "Sad", "Surprise", "Neutral"]
+        self.emotion_labels =  ["angry", "disgust", "fear", "happy", "sad", "surprise", "neutral"]
         self.model = tf.keras.models.load_model("audioai/audio_emotion_detection_model.h5")
         
     def predict(self, audio_path):

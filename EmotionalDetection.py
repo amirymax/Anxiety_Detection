@@ -96,7 +96,9 @@ async def handle_video(message: types.Message):
 
 
     video_model = VideoAI()
-    video_model.predict(video_file_path)
+
+    predictions = []
+    video_model.predict(video_file_path, predictions)
     output = "videoai/video_files/output.mp4"
     await bot.send_video(chat_id=message.chat.id, video=types.InputFile(output), caption="Emotion detected from the provided video.")
     await bot.send_message(message.chat.id, "if the video is not playing, try to save it on your device, then open from gallery.")
@@ -120,7 +122,9 @@ async def handle_video(message: types.Message):
 
 
     video_model = VideoAI()
-    video_model.predict(video_file_path)
+    predictions = []
+    video_model.predict(video_file_path, predictions)
+    print('Here are the predictions: ',predictions)
     output = "videoai/video_files/output.mp4"
     await bot.send_video_note(chat_id=message.chat.id, video_note=types.InputFile(output))
     await bot.send_message(message.chat.id, "if the video is not playing, try to save it on your device, then open from gallery.")

@@ -20,7 +20,7 @@ class VideoAI:
         self.model = model_from_json(model_json)
         self.model.load_weights("videoai/video_emotion_detection_model.h5")
 
-    def predict(self, path: str):
+    def predict(self, path: str, predictions: list):
         haar_file = cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
         face_cascade = cv2.CascadeClassifier(haar_file)
         video_capture = cv2.VideoCapture(path)
@@ -43,7 +43,9 @@ class VideoAI:
                     face_image = cv2.resize(face_image, (48, 48))
                     img = self.extract_features(face_image)
                     pred = self.model.predict(img)
+                    
                     prediction_label = self.labels[pred.argmax()]
+                    predictions.append(prediction_label)
                     cv2.putText(im, '% s' % (prediction_label), (p - 10, q - 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 2,
                                 (0, 0, 255))
 
