@@ -1,0 +1,3 @@
+*/__pycache__
+./audioai/audio_files/*.ogg
+./videoai/videofiles/*.mp4

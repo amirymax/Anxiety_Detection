@@ -1,0 +1,5 @@
+aiogram
+opencv-python
+keras
+pandas
+scikit-learn

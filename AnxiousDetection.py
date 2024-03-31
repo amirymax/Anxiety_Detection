@@ -5,7 +5,6 @@ from textai.textAI import TextAI
 from audioai.audioAI import AudioAI
 from variables import API_TOKEN, negative_message, half_negative_message
 
-# logging.basicConfig(level=logging.INFO)
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
